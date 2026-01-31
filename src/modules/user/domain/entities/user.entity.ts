@@ -1,7 +1,1 @@
-export interface UserEntity {
-  id: number;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-}
+export type { UserEntity } from '../../../../common/entities';
