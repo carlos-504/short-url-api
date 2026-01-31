@@ -1,11 +1,19 @@
 import { Module } from '@nestjs/common';
-import { ValidateCreateUserPipe } from '../../common/pipes/validate-create-user.pipe';
-import { UserRepository } from '../../library/repository/User.repository';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { USER_REPOSITORY } from './domain/repositories/user.repository.interface';
+import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
+import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository';
+import { UserController } from './presentation/controllers/user.controller';
+import { ValidateCreateUserPipe } from './presentation/validation';
 
 @Module({
   controllers: [UserController],
-  providers: [UserRepository, UserService, ValidateCreateUserPipe],
+  providers: [
+    CreateUserUseCase,
+    ValidateCreateUserPipe,
+    {
+      provide: USER_REPOSITORY,
+      useClass: PrismaUserRepository,
+    },
+  ],
 })
 export class UserModule {}
