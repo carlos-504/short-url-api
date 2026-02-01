@@ -14,11 +14,13 @@ export class DeleteShortUrlUseCase {
       id,
       userId,
     );
+
     if (!existing) {
       throw new ForbiddenException(
         'URL encurtada não encontrada ou você não tem permissão para excluí-la',
       );
     }
+
     await this.shortUrlRepository.softDelete(id);
   }
 }

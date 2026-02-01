@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
-import { SHORT_URL_REPOSITORY } from '../common/tokens';
+import { SHORT_URL_REPOSITORY } from '../../common/tokens';
 import {
   CreateShortUrlUseCase,
   ListShortUrlsUseCase,
@@ -8,12 +8,12 @@ import {
   DeleteShortUrlUseCase,
   RedirectShortUrlUseCase,
   ShortUrlResponseMapper,
-} from '../application/short-url';
-import { PrismaShortUrlRepository } from '../infrastructure/short-url';
+} from '../../application/short-url';
+import { PrismaShortUrlRepository } from '../../infrastructure/short-url';
 import {
   ShortUrlController,
   RedirectController,
-} from '../presentation/short-url';
+} from '../../presentation/short-url';
 
 @Module({
   imports: [AuthModule],

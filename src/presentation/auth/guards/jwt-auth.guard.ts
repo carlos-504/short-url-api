@@ -18,9 +18,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
+
     if (isPublic) {
       return true;
     }
+
     return super.canActivate(context);
   }
 
@@ -28,6 +30,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (err || !user) {
       throw err ?? new UnauthorizedException('Token inválido ou expirado');
     }
+
     return user;
   }
 }

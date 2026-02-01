@@ -31,6 +31,7 @@ export class RedirectController {
     @Res() res: Response,
   ): Promise<void> {
     const shortUrl = await this.redirectShortUrlUseCase.execute(code);
+
     res.redirect(302, shortUrl.originalUrl);
   }
 }

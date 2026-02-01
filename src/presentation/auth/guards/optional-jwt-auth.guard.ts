@@ -24,6 +24,7 @@ export class OptionalJwtAuthGuard extends AuthGuard('jwt') {
     if (err || !user) {
       return undefined;
     }
+
     return user;
   }
 }

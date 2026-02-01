@@ -14,9 +14,11 @@ export class GetShortUrlByIdUseCase {
 
   async execute(id: number): Promise<ShortUrlEntity> {
     const shortUrl = await this.shortUrlRepository.findById(id);
+
     if (!shortUrl) {
       throw new NotFoundException('URL encurtada não encontrada');
     }
+
     return shortUrl;
   }
 }

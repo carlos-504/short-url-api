@@ -19,17 +19,20 @@ export class CreateShortUrlUseCase {
   ) {}
 
   async execute(dto: CreateShortUrlInput): Promise<ShortUrlEntity> {
-    let shortCode: string;
+    let shortCode: string | null = null;
     let attempts = 0;
 
-    do {
-      shortCode = this.generateShortCode();
-      const existing = await this.shortUrlRepository.findByShortCode(shortCode);
-      if (!existing) break;
+    while (attempts < MAX_ATTEMPTS) {
+      const candidate = this.generateShortCode();
+      const existing = await this.shortUrlRepository.findByShortCode(candidate);
+      if (!existing) {
+        shortCode = candidate;
+        break;
+      }
       attempts++;
-    } while (attempts < MAX_ATTEMPTS);
+    }
 
-    if (attempts >= MAX_ATTEMPTS) {
+    if (shortCode === null) {
       throw new ConflictException(
         'Não foi possível gerar um código único. Tente novamente.',
       );

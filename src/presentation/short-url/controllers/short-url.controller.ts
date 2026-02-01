@@ -74,6 +74,7 @@ export class ShortUrlController {
     };
 
     const shortUrl = await this.createShortUrlUseCase.execute(input);
+
     sendResponse(res, HttpStatus.CREATED, {
       message: 'URL encurtada criada com sucesso',
       data: this.shortUrlResponseMapper.toDto(shortUrl, BASE_URL),
@@ -99,9 +100,11 @@ export class ShortUrlController {
     @CurrentUser('userId') userId: number,
   ): Promise<void> {
     const list = await this.listShortUrlsUseCase.execute(userId);
+
     const data = list.map((item) =>
       this.shortUrlResponseMapper.toDto(item, BASE_URL),
     );
+
     sendResponse(res, HttpStatus.OK, { data });
   }
 
@@ -129,6 +132,7 @@ export class ShortUrlController {
     @CurrentUser('userId') userId: number,
   ): Promise<void> {
     const shortUrl = await this.updateShortUrlUseCase.execute(id, dto, userId);
+
     sendResponse(res, HttpStatus.OK, {
       message: 'URL de destino atualizada com sucesso',
       data: this.shortUrlResponseMapper.toDto(shortUrl, BASE_URL),
@@ -155,6 +159,9 @@ export class ShortUrlController {
     @CurrentUser('userId') userId: number,
   ): Promise<void> {
     await this.deleteShortUrlUseCase.execute(id, userId);
-    res.status(HttpStatus.NO_CONTENT).send();
+
+    sendResponse(res, HttpStatus.NO_CONTENT, {
+      message: 'URL encurtada excluída com sucesso',
+    });
   }
 }

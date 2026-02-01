@@ -12,6 +12,7 @@ export class ShortUrlResponseMapper {
     baseUrl: string = DEFAULT_BASE_URL,
   ): ShortUrlResponseDto {
     const shortUrl = `${baseUrl.replace(/\/$/, '')}/short-url/r/${entity.shortCode}`;
+
     return {
       id: entity.id,
       originalUrl: entity.originalUrl,

@@ -37,6 +37,7 @@ export class AuthController {
     const user = await this.loginUseCase.execute(dto);
     const payload = { sub: String(user.userId), email: user.email };
     const accessToken = this.jwtService.sign(payload);
+
     sendResponse(res, HttpStatus.OK, {
       accessToken,
       user: {

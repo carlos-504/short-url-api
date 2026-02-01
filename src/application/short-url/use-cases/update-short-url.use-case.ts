@@ -22,11 +22,13 @@ export class UpdateShortUrlUseCase {
       id,
       userId,
     );
+
     if (!existing) {
       throw new ForbiddenException(
         'URL encurtada não encontrada ou você não tem permissão para editá-la',
       );
     }
+
     return this.shortUrlRepository.updateDestination(id, dto.originalUrl);
   }
 }

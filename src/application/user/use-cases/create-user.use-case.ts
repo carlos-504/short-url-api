@@ -21,6 +21,7 @@ export class CreateUserUseCase {
       dto.password,
       authConfig.bcryptSaltRounds,
     );
+
     return this.userRepository.create(dto.email, hashedPassword);
   }
 }

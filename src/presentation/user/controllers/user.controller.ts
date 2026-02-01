@@ -26,6 +26,7 @@ export class UserController {
   @ApiResponse({ status: 409, description: 'E-mail já cadastrado' })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const user = await this.createUserUseCase.execute(createUserDto);
+
     sendResponse(res, HttpStatus.CREATED, {
       message: 'Usuário cadastrado com sucesso',
       data: this.userResponseMapper.toDto(user),
