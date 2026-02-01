@@ -16,17 +16,17 @@ export class LoginUseCase {
 
   async execute(dto: LoginDto): Promise<LoginResult> {
     const user = await this.userRepository.findByEmail(dto.email);
+
     if (!user) {
       throw new UnauthorizedException('Email ou senha inválidos');
     }
-    const userWithPassword = user as unknown as { password: string };
-    const passwordMatch = await bcrypt.compare(
-      dto.password,
-      userWithPassword.password,
-    );
+
+    const passwordMatch = await bcrypt.compare(dto.password, user.password);
+
     if (!passwordMatch) {
       throw new UnauthorizedException('Email ou senha inválidos');
     }
+
     return {
       userId: user.id,
       email: user.email,

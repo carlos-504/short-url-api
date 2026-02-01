@@ -4,12 +4,17 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   CreateUserUseCase,
   CreateUserDto,
-  toUserResponse,
+  UserResponseMapper,
 } from '../../../application/user';
+import { sendResponse } from '../../../common/http';
+
 @ApiTags('Usuário')
 @Controller('user')
 export class UserController {
-  constructor(private readonly createUserUseCase: CreateUserUseCase) {}
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly userResponseMapper: UserResponseMapper,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -23,9 +28,9 @@ export class UserController {
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const user = await this.createUserUseCase.execute(createUserDto);
 
-    return res.status(HttpStatus.CREATED).send({
+    sendResponse(res, HttpStatus.CREATED, {
       message: 'User created successfully',
-      data: toUserResponse(user),
+      data: this.userResponseMapper.toDto(user),
     });
   }
 }

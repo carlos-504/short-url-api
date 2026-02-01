@@ -13,7 +13,8 @@ import { LoginUseCase } from '../../../application/auth/use-cases/login.use-case
 import { CreateUserUseCase } from '../../../application/user/use-cases/create-user.use-case';
 import { LoginDto } from '../../../application/auth/dtos/login.dto';
 import { CreateUserDto } from '../../../application/user/dtos/create-user.dto';
-import { toUserResponse } from '../../../application/user/dtos/user-response.dto';
+import { UserResponseMapper } from '../../../application/user';
+import { sendResponse } from '../../../common/http';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Public } from '../decorators/public.decorator';
 
@@ -25,6 +26,7 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly jwtService: JwtService,
+    private readonly userResponseMapper: UserResponseMapper,
   ) {}
 
   @Post('login')
@@ -40,7 +42,7 @@ export class AuthController {
     const user = await this.loginUseCase.execute(dto);
     const payload = { sub: String(user.userId), email: user.email };
     const accessToken = this.jwtService.sign(payload);
-    res.status(HttpStatus.OK).send({
+    sendResponse(res, HttpStatus.OK, {
       accessToken,
       user: {
         id: user.userId,
@@ -68,10 +70,10 @@ export class AuthController {
     const user = await this.createUserUseCase.execute(dto);
     const payload = { sub: String(user.id), email: user.email };
     const accessToken = this.jwtService.sign(payload);
-    res.status(HttpStatus.CREATED).send({
+    sendResponse(res, HttpStatus.CREATED, {
       message: 'Usuário criado com sucesso',
       accessToken,
-      user: toUserResponse(user),
+      user: this.userResponseMapper.toDto(user),
     });
   }
 }

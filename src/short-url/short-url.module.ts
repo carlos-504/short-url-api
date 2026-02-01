@@ -7,6 +7,7 @@ import {
   UpdateShortUrlUseCase,
   DeleteShortUrlUseCase,
   RedirectShortUrlUseCase,
+  ShortUrlResponseMapper,
 } from '../application/short-url';
 import { PrismaShortUrlRepository } from '../infrastructure/short-url';
 import {
@@ -23,6 +24,7 @@ import {
     UpdateShortUrlUseCase,
     DeleteShortUrlUseCase,
     RedirectShortUrlUseCase,
+    ShortUrlResponseMapper,
     {
       provide: SHORT_URL_REPOSITORY,
       useClass: PrismaShortUrlRepository,

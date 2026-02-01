@@ -1,6 +1,7 @@
 export * from './dtos/create-short-url.dto';
 export * from './dtos/update-short-url.dto';
 export * from './dtos/short-url-response.dto';
+export * from './mappers/short-url-response.mapper';
 export * from './use-cases/create-short-url.use-case';
 export * from './use-cases/list-short-urls.use-case';
 export * from './use-cases/update-short-url.use-case';

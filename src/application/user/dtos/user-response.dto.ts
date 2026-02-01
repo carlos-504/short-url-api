@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { UserEntity } from '../../../domain/user';
 
 export class UserResponseDto {
   @ApiProperty({ example: 1, description: 'ID do usuário' })
@@ -13,13 +12,4 @@ export class UserResponseDto {
 
   @ApiProperty({ description: 'Data de última atualização' })
   updatedAt: Date;
-}
-
-export function toUserResponse(entity: UserEntity): UserResponseDto {
-  return {
-    id: entity.id,
-    email: entity.email,
-    createdAt: entity.createdAt,
-    updatedAt: entity.updatedAt,
-  };
 }

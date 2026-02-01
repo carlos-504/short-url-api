@@ -1,8 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { ShortUrlEntity } from '../../../domain/short-url';
-
-const BASE_URL =
-  process.env.APP_URL ?? process.env.BASE_URL ?? 'http://localhost:3000';
 
 export class ShortUrlResponseDto {
   @ApiProperty({ example: 1, description: 'ID do registro' })
@@ -18,7 +14,7 @@ export class ShortUrlResponseDto {
   shortCode: string;
 
   @ApiProperty({
-    example: 'http://localhost:3000/r/aZbKq7',
+    example: 'http://localhost:3000/short-url/r/aZbKq7',
     description: 'URL encurtada completa (incluindo domínio)',
   })
   shortUrl: string;
@@ -37,21 +33,4 @@ export class ShortUrlResponseDto {
 
   @ApiProperty({ description: 'Data de última atualização' })
   updatedAt: Date;
-}
-
-export function toShortUrlResponse(
-  entity: ShortUrlEntity,
-  baseUrl: string = BASE_URL,
-): ShortUrlResponseDto {
-  const shortUrl = `${baseUrl.replace(/\/$/, '')}/r/${entity.shortCode}`;
-  return {
-    id: entity.id,
-    originalUrl: entity.originalUrl,
-    shortCode: entity.shortCode,
-    shortUrl,
-    clicks: entity.clicks.toString(),
-    userId: entity.userId,
-    createdAt: entity.createdAt,
-    updatedAt: entity.updatedAt,
-  };
 }

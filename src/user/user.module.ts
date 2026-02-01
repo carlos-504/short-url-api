@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { USER_REPOSITORY } from '../common/tokens';
-import { CreateUserUseCase } from '../application/user';
+import { CreateUserUseCase, UserResponseMapper } from '../application/user';
 import { UserController } from '../presentation/user';
 import { PrismaUserRepository } from '../infrastructure/user';
 
@@ -8,11 +8,12 @@ import { PrismaUserRepository } from '../infrastructure/user';
   controllers: [UserController],
   providers: [
     CreateUserUseCase,
+    UserResponseMapper,
     {
       provide: USER_REPOSITORY,
       useClass: PrismaUserRepository,
     },
   ],
-  exports: [CreateUserUseCase, USER_REPOSITORY],
+  exports: [CreateUserUseCase, UserResponseMapper, USER_REPOSITORY],
 })
 export class UserModule {}

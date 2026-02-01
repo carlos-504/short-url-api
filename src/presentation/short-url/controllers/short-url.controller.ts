@@ -26,9 +26,10 @@ import {
   CreateShortUrlDto,
   CreateShortUrlInput,
   UpdateShortUrlDto,
-  toShortUrlResponse,
   ShortUrlResponseDto,
+  ShortUrlResponseMapper,
 } from '../../../application/short-url';
+import { sendResponse } from '../../../common/http';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../../auth/guards/optional-jwt-auth.guard';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
@@ -44,6 +45,7 @@ export class ShortUrlController {
     private readonly listShortUrlsUseCase: ListShortUrlsUseCase,
     private readonly updateShortUrlUseCase: UpdateShortUrlUseCase,
     private readonly deleteShortUrlUseCase: DeleteShortUrlUseCase,
+    private readonly shortUrlResponseMapper: ShortUrlResponseMapper,
   ) {}
 
   @Post()
@@ -72,9 +74,9 @@ export class ShortUrlController {
     };
 
     const shortUrl = await this.createShortUrlUseCase.execute(input);
-    res.status(HttpStatus.CREATED).send({
+    sendResponse(res, HttpStatus.CREATED, {
       message: 'URL encurtada criada com sucesso',
-      data: toShortUrlResponse(shortUrl, BASE_URL),
+      data: this.shortUrlResponseMapper.toDto(shortUrl, BASE_URL),
     });
   }
 
@@ -97,10 +99,10 @@ export class ShortUrlController {
     @CurrentUser('userId') userId: number,
   ): Promise<void> {
     const list = await this.listShortUrlsUseCase.execute(userId);
-    const data: ShortUrlResponseDto[] = list.map((item) =>
-      toShortUrlResponse(item, BASE_URL),
+    const data = list.map((item) =>
+      this.shortUrlResponseMapper.toDto(item, BASE_URL),
     );
-    res.status(HttpStatus.OK).send({ data });
+    sendResponse(res, HttpStatus.OK, { data });
   }
 
   @Patch(':id')
@@ -127,9 +129,9 @@ export class ShortUrlController {
     @CurrentUser('userId') userId: number,
   ): Promise<void> {
     const shortUrl = await this.updateShortUrlUseCase.execute(id, dto, userId);
-    res.status(HttpStatus.OK).send({
+    sendResponse(res, HttpStatus.OK, {
       message: 'URL de destino atualizada com sucesso',
-      data: toShortUrlResponse(shortUrl, BASE_URL),
+      data: this.shortUrlResponseMapper.toDto(shortUrl, BASE_URL),
     });
   }
 
