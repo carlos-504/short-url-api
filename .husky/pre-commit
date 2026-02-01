@@ -1,0 +1,7 @@
+echo "🔍 Executando lint nos arquivos modificados..."
+npx lint-staged
+
+echo "🧪 Executando testes unitários..."
+npm test -- --testPathPatterns="test/unit" --bail --passWithNoTests --verbose
+
+echo "✅ Pre-commit checks passed!"

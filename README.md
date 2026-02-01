@@ -158,6 +158,23 @@ O `docker-compose.yml` usa `Dockerfile.dev` por padrão. Para usar o de produç�
 docker build -f Dockerfile.prod -t short-url-api:prod .
 ```
 
+## Git Hooks
+
+O projeto usa **Husky** para garantir qualidade do código antes de commits e pushes:
+
+- **Pre-commit**: Executa lint (arquivos modificados) + testes unitários relacionados
+- **Pre-push**: Executa lint completo + todos os testes
+
+```bash
+# Commit normal (hooks executam automaticamente)
+git commit -m "mensagem"
+
+# Pular hooks (apenas em emergências)
+git commit -m "mensagem" --no-verify
+```
+
+Veja `.husky/README.md` para mais detalhes.
+
 ## Scripts úteis
 
 ```bash
@@ -166,6 +183,7 @@ npm run start:dev    # desenvolvimento com watch
 npm run start:prod   # rodar build de produção
 npm run lint         # ESLint
 npm run test         # testes unitários
+npm run test:verbose # testes com logs detalhados
 npm run test:e2e     # testes e2e
 npm run test:cov     # testes com cobertura
 ```

@@ -1,0 +1,7 @@
+echo "🔍 Executando lint completo..."
+npm run lint
+
+echo "🧪 Executando todos os testes..."
+npm test -- --verbose
+
+echo "✅ Pre-push checks passed!"
