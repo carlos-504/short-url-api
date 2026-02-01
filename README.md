@@ -167,7 +167,41 @@ npm run start:prod   # rodar build de produção
 npm run lint         # ESLint
 npm run test         # testes unitários
 npm run test:e2e     # testes e2e
+npm run test:cov     # testes com cobertura
 ```
+
+## Testes
+
+O projeto possui uma estrutura organizada de testes em `test/`:
+
+```
+test/
+├── unit/controllers/        # Testes unitários dos controllers
+├── mocks/                   # Mocks reutilizáveis (User, ShortUrl, Express)
+└── *.e2e-spec.ts           # Testes E2E
+```
+
+### Testes Unitários
+
+- **UserController**: criação de usuários
+- **AuthController**: login e geração de JWT
+- **ShortUrlController**: CRUD de URLs encurtadas
+- **RedirectController**: redirecionamento e contagem de cliques
+
+Os testes usam **mocks centralizados** e **não acessam o banco de dados**.
+
+```bash
+# Rodar todos os testes unitários
+npm test -- --testPathPatterns="test/unit"
+
+# Rodar testes de um controller específico
+npm test -- user.controller.spec.ts
+
+# Rodar com cobertura
+npm run test:cov
+```
+
+Veja `test/README.md` para mais detalhes sobre a estrutura de testes.
 
 ## Licença
 
