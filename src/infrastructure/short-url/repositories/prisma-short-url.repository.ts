@@ -57,21 +57,21 @@ export class PrismaShortUrlRepository implements IShortUrlRepository {
     originalUrl: string,
   ): Promise<ShortUrlEntity> {
     return prisma.shortUrl.update({
-      where: { id },
+      where: { id, deletedAt: null },
       data: { originalUrl },
     });
   }
 
   async softDelete(id: number): Promise<void> {
     await prisma.shortUrl.update({
-      where: { id },
+      where: { id, deletedAt: null },
       data: { deletedAt: new Date() },
     });
   }
 
   async incrementClicks(id: number): Promise<void> {
     await prisma.shortUrl.update({
-      where: { id },
+      where: { id, deletedAt: null },
       data: { clicks: { increment: 1 } },
     });
   }
