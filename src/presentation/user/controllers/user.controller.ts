@@ -18,18 +18,16 @@ export class UserController {
 
   @Post()
   @ApiOperation({
-    summary: 'Criar usuário (alternativo)',
-    description:
-      'Cria novo usuário. Para cadastro com token JWT, use POST /auth/register.',
+    summary: 'Cadastrar usuário',
+    description: 'Cria novo usuário (e-mail e senha).',
   })
-  @ApiResponse({ status: 201, description: 'Usuário criado com sucesso' })
+  @ApiResponse({ status: 201, description: 'Usuário cadastrado com sucesso' })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
   @ApiResponse({ status: 409, description: 'E-mail já cadastrado' })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const user = await this.createUserUseCase.execute(createUserDto);
-
     sendResponse(res, HttpStatus.CREATED, {
-      message: 'User created successfully',
+      message: 'Usuário cadastrado com sucesso',
       data: this.userResponseMapper.toDto(user),
     });
   }

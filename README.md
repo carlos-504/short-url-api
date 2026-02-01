@@ -83,8 +83,11 @@ Valores que **não** são variáveis de ambiente (fixos no código): tamanho do 
 
 ### Autenticação (Bearer Token)
 
-- **POST /auth/register** – Cadastro de usuário (e-mail, senha). Retorna `accessToken` (usar como `Authorization: Bearer <accessToken>`).
 - **POST /auth/login** – Login com e-mail e senha. Retorna `accessToken` (Bearer Token).
+
+### Cadastro de usuário
+
+- **POST /user** – Cadastro de usuário (e-mail, senha).
 
 ### Encurtar URL (um único endpoint)
 
