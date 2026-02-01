@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: short-url-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: shorturl
+      POSTGRES_PASSWORD: shorturl
+      POSTGRES_DB: short_url_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shorturl -d short_url_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: short-url-app
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://shorturl:shorturl@db:5432/short_url_db
+      JWT_SECRET: change-me-in-production
+      PORT: 3000
+      APP_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:

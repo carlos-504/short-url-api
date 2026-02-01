@@ -1,0 +1,36 @@
+# Build stage
+FROM node:latest AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY prisma ./prisma/
+COPY prisma.config.ts ./
+COPY tsconfig.json tsconfig.build.json nest-cli.json ./
+COPY src ./src
+
+# Dummy DATABASE_URL for prisma generate (não conecta ao banco)
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+
+RUN npx prisma generate && npm run build && cp -r src/generated dist/
+
+# Production stage
+FROM node:latest AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY prisma ./prisma/
+COPY prisma.config.ts ./
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+
+# Migrações rodam na inicialização; depois sobe a API
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]

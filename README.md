@@ -10,6 +10,26 @@ API REST em Node.js (NestJS) para encurtamento de URLs, cadastro e autenticaçã
 
 ## Como rodar o projeto
 
+### Opção A: Docker Compose (ambiente completo local)
+
+Sobe o banco PostgreSQL e a aplicação em containers. Usa **`Dockerfile.dev`** (desenvolvimento com hot-reload):
+
+```bash
+docker compose up -d
+```
+
+- **Banco:** PostgreSQL 16 na porta `5432` (usuário/senha/DB: `shorturl`/`shorturl`/`short_url_db`).
+- **API:** `http://localhost:3000` (Swagger em `http://localhost:3000/api/docs`).
+- **Volumes:** `./src` e `./prisma` montados no container (mudanças refletem automaticamente).
+
+As migrações rodam automaticamente na subida do container da aplicação. Para ver os logs: `docker compose logs -f app`.
+
+Para parar: `docker compose down`. Para remover também o volume do banco: `docker compose down -v`.
+
+**Para produção:** use `Dockerfile.prod` (build otimizado, sem volumes, sem dev dependencies).
+
+### Opção B: Local (Node + PostgreSQL no host)
+
 ### 1. Clonar e instalar dependências
 
 ```bash
@@ -124,6 +144,19 @@ Requisições autenticadas: header `Authorization: Bearer <accessToken>`.
 - `infrastructure/` – implementações (ex.: Prisma).
 - `presentation/` – controllers, guards, estratégias JWT.
 - Módulos Nest em `user/`, `auth/`, `short-url/` na raiz de `src/`.
+
+## Docker
+
+O projeto possui dois Dockerfiles:
+
+- **`Dockerfile.dev`** – para desenvolvimento local com Docker Compose (hot-reload, volumes montados).
+- **`Dockerfile.prod`** – para produção (multi-stage, build otimizado, sem dev dependencies).
+
+O `docker-compose.yml` usa `Dockerfile.dev` por padrão. Para usar o de produção, altere o `dockerfile` no compose ou rode:
+
+```bash
+docker build -f Dockerfile.prod -t short-url-api:prod .
+```
 
 ## Scripts úteis
 
