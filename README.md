@@ -59,6 +59,14 @@ npm run start:prod
 
 A API estará disponível em `http://localhost:3000` (ou na porta definida em `PORT`).
 
+### Documentação OpenAPI (Swagger)
+
+Com a aplicação rodando, a documentação interativa da API está em:
+
+- **Swagger UI:** `http://localhost:3000/api/docs`
+
+Lá é possível visualizar todos os endpoints, schemas de request/response e testar as requisições (incluindo Bearer Token para rotas autenticadas).
+
 ## Variáveis de ambiente
 
 | Variável            | Obrigatória | Descrição                                                                 | Padrão              |

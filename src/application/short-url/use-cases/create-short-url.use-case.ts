@@ -4,7 +4,7 @@ import type {
   IShortUrlRepository,
 } from '../../../domain/short-url';
 import { SHORT_URL_REPOSITORY } from '../../../common/tokens';
-import type { CreateShortUrlDto } from '../dtos/create-short-url.dto';
+import type { CreateShortUrlInput } from '../dtos/create-short-url.dto';
 
 const SHORT_CODE_LENGTH = 6;
 const ALPHANUMERIC =
@@ -18,7 +18,7 @@ export class CreateShortUrlUseCase {
     private readonly shortUrlRepository: IShortUrlRepository,
   ) {}
 
-  async execute(dto: CreateShortUrlDto): Promise<ShortUrlEntity> {
+  async execute(dto: CreateShortUrlInput): Promise<ShortUrlEntity> {
     let shortCode: string;
     let attempts = 0;
 

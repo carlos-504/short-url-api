@@ -7,6 +7,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUseCase } from '../../../application/auth/use-cases/login.use-case';
 import { CreateUserUseCase } from '../../../application/user/use-cases/create-user.use-case';
@@ -16,6 +17,7 @@ import { toUserResponse } from '../../../application/user/dtos/user-response.dto
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Public } from '../decorators/public.decorator';
 
+@ApiTags('Autenticação')
 @Controller('auth')
 @UseGuards(JwtAuthGuard)
 export class AuthController {
@@ -27,6 +29,13 @@ export class AuthController {
 
   @Post('login')
   @Public()
+  @ApiOperation({
+    summary: 'Login',
+    description:
+      'Autentica com e-mail e senha. Retorna Bearer Token (accessToken).',
+  })
+  @ApiResponse({ status: 200, description: 'Login realizado com sucesso' })
+  @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
   async login(@Body() dto: LoginDto, @Res() res: Response): Promise<void> {
     const user = await this.loginUseCase.execute(dto);
     const payload = { sub: String(user.userId), email: user.email };
@@ -42,6 +51,16 @@ export class AuthController {
 
   @Post('register')
   @Public()
+  @ApiOperation({
+    summary: 'Cadastro de usuário',
+    description: 'Cria novo usuário. Retorna Bearer Token (accessToken).',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuário criado com sucesso. Retorna accessToken e user.',
+  })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 409, description: 'E-mail já cadastrado' })
   async register(
     @Body() dto: CreateUserDto,
     @Res() res: Response,
