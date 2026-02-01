@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import type { IShortUrlRepository } from '../../../domain/short-url';
 import { SHORT_URL_REPOSITORY } from '../../../common/tokens';
 
@@ -9,10 +9,15 @@ export class DeleteShortUrlUseCase {
     private readonly shortUrlRepository: IShortUrlRepository,
   ) {}
 
-  async execute(id: number): Promise<void> {
-    const existing = await this.shortUrlRepository.findById(id);
+  async execute(id: number, userId: number): Promise<void> {
+    const existing = await this.shortUrlRepository.findByIdAndUserId(
+      id,
+      userId,
+    );
     if (!existing) {
-      throw new NotFoundException('URL encurtada não encontrada');
+      throw new ForbiddenException(
+        'URL encurtada não encontrada ou você não tem permissão para excluí-la',
+      );
     }
     await this.shortUrlRepository.softDelete(id);
   }

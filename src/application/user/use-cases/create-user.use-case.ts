@@ -1,6 +1,8 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import type { UserEntity, IUserRepository } from '../../../domain/user';
 import { USER_REPOSITORY } from '../../../common/tokens';
+import { authConfig } from '../../../config/auth.config';
 import type { CreateUserDto } from '../dtos/create-user.dto';
 
 @Injectable()
@@ -15,6 +17,10 @@ export class CreateUserUseCase {
     if (existingUser) {
       throw new BadRequestException('Email já cadastrado');
     }
-    return this.userRepository.create(dto.email);
+    const hashedPassword = await bcrypt.hash(
+      dto.password,
+      authConfig.bcryptSaltRounds,
+    );
+    return this.userRepository.create(dto.email, hashedPassword);
   }
 }

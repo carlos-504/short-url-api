@@ -1,9 +1,13 @@
 import type { ShortUrlEntity } from '../../../domain/short-url';
 
+const BASE_URL =
+  process.env.APP_URL ?? process.env.BASE_URL ?? 'http://localhost:3000';
+
 export interface ShortUrlResponseDto {
   id: number;
   originalUrl: string;
   shortCode: string;
+  shortUrl: string;
   clicks: string;
   userId: number | null;
   createdAt: Date;
@@ -12,11 +16,14 @@ export interface ShortUrlResponseDto {
 
 export function toShortUrlResponse(
   entity: ShortUrlEntity,
+  baseUrl: string = BASE_URL,
 ): ShortUrlResponseDto {
+  const shortUrl = `${baseUrl.replace(/\/$/, '')}/r/${entity.shortCode}`;
   return {
     id: entity.id,
     originalUrl: entity.originalUrl,
     shortCode: entity.shortCode,
+    shortUrl,
     clicks: entity.clicks.toString(),
     userId: entity.userId,
     createdAt: entity.createdAt,

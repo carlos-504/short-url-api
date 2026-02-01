@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { SHORT_URL_REPOSITORY } from '../../../common/tokens';
 import type {
   ShortUrlEntity,
@@ -13,10 +13,19 @@ export class UpdateShortUrlUseCase {
     private readonly shortUrlRepository: IShortUrlRepository,
   ) {}
 
-  async execute(id: number, dto: UpdateShortUrlDto): Promise<ShortUrlEntity> {
-    const existing = await this.shortUrlRepository.findById(id);
+  async execute(
+    id: number,
+    dto: UpdateShortUrlDto,
+    userId: number,
+  ): Promise<ShortUrlEntity> {
+    const existing = await this.shortUrlRepository.findByIdAndUserId(
+      id,
+      userId,
+    );
     if (!existing) {
-      throw new NotFoundException('URL encurtada não encontrada');
+      throw new ForbiddenException(
+        'URL encurtada não encontrada ou você não tem permissão para editá-la',
+      );
     }
     return this.shortUrlRepository.updateDestination(id, dto.originalUrl);
   }

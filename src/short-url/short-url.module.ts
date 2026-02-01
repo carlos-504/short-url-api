@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
+import { AuthModule } from '../auth/auth.module';
 import { SHORT_URL_REPOSITORY } from '../common/tokens';
 import {
   CreateShortUrlUseCase,
   ListShortUrlsUseCase,
-  GetShortUrlByIdUseCase,
   UpdateShortUrlUseCase,
   DeleteShortUrlUseCase,
   RedirectShortUrlUseCase,
@@ -15,11 +15,11 @@ import {
 } from '../presentation/short-url';
 
 @Module({
+  imports: [AuthModule],
   controllers: [ShortUrlController, RedirectController],
   providers: [
     CreateShortUrlUseCase,
     ListShortUrlsUseCase,
-    GetShortUrlByIdUseCase,
     UpdateShortUrlUseCase,
     DeleteShortUrlUseCase,
     RedirectShortUrlUseCase,

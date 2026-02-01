@@ -10,9 +10,9 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
-  async create(email: string): Promise<UserEntity> {
+  async create(email: string, password: string): Promise<UserEntity> {
     return prisma.user.create({
-      data: { email },
+      data: { email, password } as any,
     });
   }
 }

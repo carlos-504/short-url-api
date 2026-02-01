@@ -27,6 +27,15 @@ export class PrismaShortUrlRepository implements IShortUrlRepository {
     });
   }
 
+  async findByIdAndUserId(
+    id: number,
+    userId: number,
+  ): Promise<ShortUrlEntity | null> {
+    return prisma.shortUrl.findFirst({
+      where: { id, userId, deletedAt: null },
+    });
+  }
+
   async findByShortCode(shortCode: string): Promise<ShortUrlEntity | null> {
     return prisma.shortUrl.findFirst({
       where: { shortCode, deletedAt: null },

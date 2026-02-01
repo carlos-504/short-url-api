@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { USER_REPOSITORY } from '../common/tokens';
-import { CreateUserUseCase } from '../application/user/';
+import { CreateUserUseCase } from '../application/user';
+import { UserController } from '../presentation/user';
 import { PrismaUserRepository } from '../infrastructure/user';
-import { UserController } from '../presentation/user/index';
 
 @Module({
   controllers: [UserController],
@@ -13,5 +13,6 @@ import { UserController } from '../presentation/user/index';
       useClass: PrismaUserRepository,
     },
   ],
+  exports: [CreateUserUseCase, USER_REPOSITORY],
 })
 export class UserModule {}

@@ -12,7 +12,7 @@ export class ListShortUrlsUseCase {
     private readonly shortUrlRepository: IShortUrlRepository,
   ) {}
 
-  async execute(userId?: number): Promise<ShortUrlEntity[]> {
+  async execute(userId: number): Promise<ShortUrlEntity[]> {
     return this.shortUrlRepository.findAll(userId);
   }
 }

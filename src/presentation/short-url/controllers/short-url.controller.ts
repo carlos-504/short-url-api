@@ -10,11 +10,11 @@ import {
   Patch,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import {
   CreateShortUrlUseCase,
   ListShortUrlsUseCase,
-  GetShortUrlByIdUseCase,
   UpdateShortUrlUseCase,
   DeleteShortUrlUseCase,
   CreateShortUrlDto,
@@ -22,66 +22,75 @@ import {
   toShortUrlResponse,
   type ShortUrlResponseDto,
 } from '../../../application/short-url';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../../auth/guards/optional-jwt-auth.guard';
+import { CurrentUser } from '../../auth/decorators/current-user.decorator';
+
+const BASE_URL =
+  process.env.APP_URL ?? process.env.BASE_URL ?? 'http://localhost:3000';
 
 @Controller('short-url')
 export class ShortUrlController {
   constructor(
     private readonly createShortUrlUseCase: CreateShortUrlUseCase,
     private readonly listShortUrlsUseCase: ListShortUrlsUseCase,
-    private readonly getShortUrlByIdUseCase: GetShortUrlByIdUseCase,
     private readonly updateShortUrlUseCase: UpdateShortUrlUseCase,
     private readonly deleteShortUrlUseCase: DeleteShortUrlUseCase,
   ) {}
 
   @Post()
+  @UseGuards(OptionalJwtAuthGuard)
   async create(
     @Body() dto: CreateShortUrlDto,
     @Res() res: Response,
+    @CurrentUser('userId') userId?: number,
   ): Promise<void> {
-    const shortUrl = await this.createShortUrlUseCase.execute(dto);
+    const shortUrl = await this.createShortUrlUseCase.execute({
+      ...dto,
+      userId: userId ?? undefined,
+    });
     res.status(HttpStatus.CREATED).send({
       message: 'URL encurtada criada com sucesso',
-      data: toShortUrlResponse(shortUrl),
+      data: toShortUrlResponse(shortUrl, BASE_URL),
     });
   }
 
   @Get()
-  async list(@Res() res: Response): Promise<void> {
-    const list = await this.listShortUrlsUseCase.execute();
-    const data: ShortUrlResponseDto[] = list.map(toShortUrlResponse);
+  @UseGuards(JwtAuthGuard)
+  async list(
+    @Res() res: Response,
+    @CurrentUser('userId') userId: number,
+  ): Promise<void> {
+    const list = await this.listShortUrlsUseCase.execute(userId);
+    const data: ShortUrlResponseDto[] = list.map((item) =>
+      toShortUrlResponse(item, BASE_URL),
+    );
     res.status(HttpStatus.OK).send({ data });
   }
 
-  @Get(':id')
-  async getById(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ): Promise<void> {
-    const shortUrl = await this.getShortUrlByIdUseCase.execute(id);
-    res.status(HttpStatus.OK).send({
-      data: toShortUrlResponse(shortUrl),
-    });
-  }
-
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateShortUrlDto,
     @Res() res: Response,
+    @CurrentUser('userId') userId: number,
   ): Promise<void> {
-    const shortUrl = await this.updateShortUrlUseCase.execute(id, dto);
+    const shortUrl = await this.updateShortUrlUseCase.execute(id, dto, userId);
     res.status(HttpStatus.OK).send({
       message: 'URL de destino atualizada com sucesso',
-      data: toShortUrlResponse(shortUrl),
+      data: toShortUrlResponse(shortUrl, BASE_URL),
     });
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async delete(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
+    @CurrentUser('userId') userId: number,
   ): Promise<void> {
-    await this.deleteShortUrlUseCase.execute(id);
+    await this.deleteShortUrlUseCase.execute(id, userId);
     res.status(HttpStatus.NO_CONTENT).send();
   }
 }
