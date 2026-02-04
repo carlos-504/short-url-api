@@ -15,7 +15,7 @@ export const mockShortUrlResponse = {
   id: 1,
   originalUrl: 'https://example.com/very-long-url',
   shortCode: 'abc123',
-  shortUrl: 'http://localhost:3000/short-url/r/abc123',
+  shortUrl: 'http://localhost:3000/r/abc123',
   clicks: '0',
   userId: 1,
   createdAt: new Date('2024-01-01T00:00:00.000Z'),

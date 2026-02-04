@@ -1,4 +1,4 @@
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import {
   Body,
   Controller,
@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -30,12 +31,10 @@ import {
   ShortUrlResponseMapper,
 } from '../../../application/short-url';
 import { sendResponse } from '../../../common/http';
+import { getBaseUrlFromRequest } from '../../../config/app.config';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../../auth/guards/optional-jwt-auth.guard';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-
-const BASE_URL =
-  process.env.APP_URL ?? process.env.BASE_URL ?? 'http://localhost:3000';
 
 @ApiTags('URL Encurtada')
 @Controller('short-url')
@@ -65,6 +64,7 @@ export class ShortUrlController {
   @ApiResponse({ status: 409, description: 'Conflito ao gerar código único' })
   async create(
     @Body() dto: CreateShortUrlDto,
+    @Req() req: Request,
     @Res() res: Response,
     @CurrentUser('userId') userId?: number,
   ): Promise<void> {
@@ -77,7 +77,10 @@ export class ShortUrlController {
 
     sendResponse(res, HttpStatus.CREATED, {
       message: 'URL encurtada criada com sucesso',
-      data: this.shortUrlResponseMapper.toDto(shortUrl, BASE_URL),
+      data: this.shortUrlResponseMapper.toDto(
+        shortUrl,
+        getBaseUrlFromRequest(req),
+      ),
     });
   }
 
@@ -96,13 +99,15 @@ export class ShortUrlController {
   })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   async list(
+    @Req() req: Request,
     @Res() res: Response,
     @CurrentUser('userId') userId: number,
   ): Promise<void> {
     const list = await this.listShortUrlsUseCase.execute(userId);
+    const baseUrl = getBaseUrlFromRequest(req);
 
     const data = list.map((item) =>
-      this.shortUrlResponseMapper.toDto(item, BASE_URL),
+      this.shortUrlResponseMapper.toDto(item, baseUrl),
     );
 
     sendResponse(res, HttpStatus.OK, { data });
@@ -128,6 +133,7 @@ export class ShortUrlController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateShortUrlDto,
+    @Req() req: Request,
     @Res() res: Response,
     @CurrentUser('userId') userId: number,
   ): Promise<void> {
@@ -135,7 +141,10 @@ export class ShortUrlController {
 
     sendResponse(res, HttpStatus.OK, {
       message: 'URL de destino atualizada com sucesso',
-      data: this.shortUrlResponseMapper.toDto(shortUrl, BASE_URL),
+      data: this.shortUrlResponseMapper.toDto(
+        shortUrl,
+        getBaseUrlFromRequest(req),
+      ),
     });
   }
 

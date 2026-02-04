@@ -14,7 +14,7 @@ export class ShortUrlResponseDto {
   shortCode: string;
 
   @ApiProperty({
-    example: 'http://localhost:3000/short-url/r/aZbKq7',
+    example: 'http://localhost:3000/r/cPXz72',
     description: 'URL encurtada completa (incluindo domínio)',
   })
   shortUrl: string;

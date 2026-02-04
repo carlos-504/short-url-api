@@ -4,9 +4,29 @@ import type {
   ShortUrlEntity,
   IShortUrlRepository,
 } from '../../../domain/short-url';
+import { encodeId } from '../../../common/utils/hashids';
 
 @Injectable()
 export class PrismaShortUrlRepository implements IShortUrlRepository {
+  async createWithGeneratedCode(
+    originalUrl: string,
+    userId?: number,
+  ): Promise<ShortUrlEntity> {
+    const [{ nextval }] = await prisma.$queryRaw<[{ nextval: bigint }]>`
+      SELECT nextval(pg_get_serial_sequence('short_urls', 'id')) as nextval
+    `;
+    const id = Number(nextval);
+    const shortCode = encodeId(id);
+    return prisma.shortUrl.create({
+      data: {
+        id,
+        originalUrl,
+        shortCode,
+        userId: userId ?? null,
+      },
+    });
+  }
+
   async create(
     originalUrl: string,
     shortCode: string,

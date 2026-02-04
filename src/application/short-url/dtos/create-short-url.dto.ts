@@ -11,7 +11,6 @@ export class CreateShortUrlDto {
   originalUrl: string;
 }
 
-/** Entrada do use case: originalUrl + userId (preenchido pelo controller quando autenticado) */
 export interface CreateShortUrlInput {
   originalUrl: string;
   userId?: number;

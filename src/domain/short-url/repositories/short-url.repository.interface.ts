@@ -9,6 +9,10 @@ export interface IShortUrlRepository {
     shortCode: string,
     userId?: number,
   ): Promise<ShortUrlEntity>;
+  createWithGeneratedCode(
+    originalUrl: string,
+    userId?: number,
+  ): Promise<ShortUrlEntity>;
   findById(id: number): Promise<ShortUrlEntity | null>;
   findByIdAndUserId(id: number, userId: number): Promise<ShortUrlEntity | null>;
   findByShortCode(shortCode: string): Promise<ShortUrlEntity | null>;

@@ -4,6 +4,7 @@ import type {
   ShortUrlEntity,
   IShortUrlRepository,
 } from '../../../domain/short-url';
+import { decodeId } from '../../../common/utils/hashids';
 
 @Injectable()
 export class RedirectShortUrlUseCase {
@@ -13,8 +14,12 @@ export class RedirectShortUrlUseCase {
   ) {}
 
   async execute(shortCode: string): Promise<ShortUrlEntity> {
-    const shortUrl = await this.shortUrlRepository.findByShortCode(shortCode);
+    const id = decodeId(shortCode);
+    if (id === null) {
+      throw new NotFoundException('URL encurtada não encontrada');
+    }
 
+    const shortUrl = await this.shortUrlRepository.findById(id);
     if (!shortUrl) {
       throw new NotFoundException('URL encurtada não encontrada');
     }

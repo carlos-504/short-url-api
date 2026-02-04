@@ -1,15 +1,10 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type {
   ShortUrlEntity,
   IShortUrlRepository,
 } from '../../../domain/short-url';
 import { SHORT_URL_REPOSITORY } from '../../../common/tokens';
 import type { CreateShortUrlInput } from '../dtos/create-short-url.dto';
-
-const SHORT_CODE_LENGTH = 6;
-const ALPHANUMERIC =
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const MAX_ATTEMPTS = 10;
 
 @Injectable()
 export class CreateShortUrlUseCase {
@@ -19,39 +14,9 @@ export class CreateShortUrlUseCase {
   ) {}
 
   async execute(dto: CreateShortUrlInput): Promise<ShortUrlEntity> {
-    let shortCode: string | null = null;
-    let attempts = 0;
-
-    while (attempts < MAX_ATTEMPTS) {
-      const candidate = this.generateShortCode();
-      const existing = await this.shortUrlRepository.findByShortCode(candidate);
-      if (!existing) {
-        shortCode = candidate;
-        break;
-      }
-      attempts++;
-    }
-
-    if (shortCode === null) {
-      throw new ConflictException(
-        'Não foi possível gerar um código único. Tente novamente.',
-      );
-    }
-
-    return this.shortUrlRepository.create(
+    return this.shortUrlRepository.createWithGeneratedCode(
       dto.originalUrl,
-      shortCode,
       dto.userId,
     );
-  }
-
-  private generateShortCode(): string {
-    let result = '';
-    for (let i = 0; i < SHORT_CODE_LENGTH; i++) {
-      result += ALPHANUMERIC.charAt(
-        Math.floor(Math.random() * ALPHANUMERIC.length),
-      );
-    }
-    return result;
   }
 }

@@ -2,6 +2,7 @@ import type { Response } from 'express';
 import { Controller, Get, Param, Res } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RedirectShortUrlUseCase } from '../../../application/short-url';
+import { ParseNonEmptyStringPipe } from '../../../common/pipes/parse-non-empty-string.pipe';
 
 @ApiTags('Redirecionamento')
 @Controller('r')
@@ -20,14 +21,16 @@ export class RedirectController {
     name: 'code',
     description: 'Código encurtado (até 6 caracteres)',
     example: 'aZbKq7',
+    required: true,
   })
   @ApiResponse({
     status: 302,
     description: 'Redirecionamento para a URL de origem',
   })
+  @ApiResponse({ status: 400, description: 'Código é obrigatório' })
   @ApiResponse({ status: 404, description: 'URL encurtada não encontrada' })
   async redirect(
-    @Param('code') code: string,
+    @Param('code', new ParseNonEmptyStringPipe()) code: string,
     @Res() res: Response,
   ): Promise<void> {
     const shortUrl = await this.redirectShortUrlUseCase.execute(code);
