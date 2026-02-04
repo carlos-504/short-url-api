@@ -55,7 +55,7 @@ describe('AuthController', () => {
   });
 
   describe('login', () => {
-    it('deve realizar login com sucesso e retornar accessToken', async () => {
+    it('should login successfully and return accessToken', async () => {
       const loginDto: LoginDto = {
         email: 'test@example.com',
         password: 'Password123!',
@@ -85,13 +85,13 @@ describe('AuthController', () => {
       });
     });
 
-    it('deve propagar erro quando credenciais forem inválidas', async () => {
+    it('should propagate error when credentials are invalid', async () => {
       const loginDto: LoginDto = {
         email: 'test@example.com',
         password: 'wrongPassword',
       };
 
-      const error = new Error('Credenciais inválidas');
+      const error = new Error('Invalid credentials');
       loginUseCase.execute.mockRejectedValue(error);
 
       await expect(
@@ -104,7 +104,7 @@ describe('AuthController', () => {
       expect(mockResponse.json).not.toHaveBeenCalled();
     });
 
-    it('deve gerar token JWT com payload correto', async () => {
+    it('should generate JWT token with correct payload', async () => {
       const loginDto: LoginDto = {
         email: 'another@example.com',
         password: 'SecurePass456!',
@@ -134,7 +134,7 @@ describe('AuthController', () => {
       });
     });
 
-    it('deve converter userId para string no payload do JWT', async () => {
+    it('should convert userId to string in JWT payload', async () => {
       const loginDto: LoginDto = {
         email: 'test@example.com',
         password: 'Password123!',
@@ -146,8 +146,8 @@ describe('AuthController', () => {
       await controller.login(loginDto, mockResponse as Response);
 
       const signCall = jwtService.sign.mock.calls[0][0];
-      expect(typeof (signCall as any).sub).toBe('string');
-      expect((signCall as any).sub).toBe('1');
+      expect(typeof (signCall as { sub: string }).sub).toBe('string');
+      expect((signCall as { sub: string }).sub).toBe('1');
     });
   });
 });

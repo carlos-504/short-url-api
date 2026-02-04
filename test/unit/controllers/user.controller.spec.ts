@@ -54,7 +54,7 @@ describe('UserController', () => {
   });
 
   describe('create', () => {
-    it('deve criar um novo usuário com sucesso', async () => {
+    it('should create a new user successfully', async () => {
       const createUserDto: CreateUserDto = {
         email: 'test@example.com',
         password: 'Password123!',
@@ -78,13 +78,13 @@ describe('UserController', () => {
       });
     });
 
-    it('deve propagar erro quando o use case falhar', async () => {
+    it('should propagate error when use case fails', async () => {
       const createUserDto: CreateUserDto = {
         email: 'test@example.com',
         password: 'Password123!',
       };
 
-      const error = new Error('E-mail já cadastrado');
+      const error = new Error('Email already registered');
       createUserUseCase.execute.mockRejectedValue(error);
 
       await expect(
@@ -97,7 +97,7 @@ describe('UserController', () => {
       expect(mockResponse.json).not.toHaveBeenCalled();
     });
 
-    it('deve chamar o mapper com a entidade retornada pelo use case', async () => {
+    it('should call mapper with entity returned by use case', async () => {
       const createUserDto: CreateUserDto = {
         email: 'another@example.com',
         password: 'SecurePass456!',

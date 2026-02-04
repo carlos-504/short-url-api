@@ -39,8 +39,8 @@ describe('RedirectController', () => {
   });
 
   describe('redirect', () => {
-    it('deve redirecionar para a URL original com status 302', async () => {
-      const shortCode = 'abc123';
+    it('should redirect to original URL with status 302', async () => {
+      const shortCode = 'kR3vN2';
 
       redirectShortUrlUseCase.execute.mockResolvedValue(mockShortUrlEntity);
 
@@ -55,10 +55,10 @@ describe('RedirectController', () => {
       );
     });
 
-    it('deve propagar erro quando código não for encontrado', async () => {
+    it('should propagate error when code is not found', async () => {
       const shortCode = 'invalid';
 
-      const error = new Error('URL encurtada não encontrada');
+      const error = new Error('Short URL not found');
       redirectShortUrlUseCase.execute.mockRejectedValue(error);
 
       await expect(
@@ -69,7 +69,7 @@ describe('RedirectController', () => {
       expect(mockResponse.redirect).not.toHaveBeenCalled();
     });
 
-    it('deve incrementar cliques ao redirecionar', async () => {
+    it('should increment clicks when redirecting', async () => {
       const shortCode = 'xyz789';
       const entityWithMoreClicks = createMockShortUrl({
         shortCode: 'xyz789',
@@ -87,7 +87,7 @@ describe('RedirectController', () => {
       );
     });
 
-    it('deve redirecionar URLs sem usuário associado', async () => {
+    it('should redirect URLs without associated user', async () => {
       const shortCode = 'public1';
       const publicEntity = createMockShortUrl({
         shortCode: 'public1',
@@ -106,8 +106,8 @@ describe('RedirectController', () => {
       );
     });
 
-    it('deve aceitar códigos com diferentes tamanhos', async () => {
-      const testCases = ['a', 'ab', 'abc', 'abcd', 'abcde', 'abcdef'];
+    it('should accept hashids codes of different lengths (1-6 chars)', async () => {
+      const testCases = ['a', 'ab', 'kR3', 'kR3v', 'kR3vN', 'kR3vN2'];
 
       for (const code of testCases) {
         const entity = createMockShortUrl({

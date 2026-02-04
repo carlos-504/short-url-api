@@ -17,6 +17,7 @@ import {
   mockShortUrlResponse,
   createMockShortUrl,
   createMockResponse,
+  createMockRequest,
 } from '../../mocks';
 
 describe('ShortUrlController', () => {
@@ -27,6 +28,7 @@ describe('ShortUrlController', () => {
   let deleteShortUrlUseCase: jest.Mocked<DeleteShortUrlUseCase>;
   let shortUrlResponseMapper: jest.Mocked<ShortUrlResponseMapper>;
   let mockResponse: Partial<Response>;
+  let mockRequest: Partial<ReturnType<typeof createMockRequest>>;
 
   beforeEach(async () => {
     const mockCreateShortUrlUseCase = {
@@ -83,6 +85,7 @@ describe('ShortUrlController', () => {
     shortUrlResponseMapper = module.get(ShortUrlResponseMapper);
 
     mockResponse = createMockResponse();
+    mockRequest = createMockRequest();
   });
 
   afterEach(() => {
@@ -90,7 +93,7 @@ describe('ShortUrlController', () => {
   });
 
   describe('create', () => {
-    it('deve criar URL encurtada sem usuário autenticado', async () => {
+    it('should create short URL without authenticated user', async () => {
       const dto: CreateShortUrlDto = {
         originalUrl: 'https://example.com/very-long-url',
       };
@@ -101,7 +104,12 @@ describe('ShortUrlController', () => {
       createShortUrlUseCase.execute.mockResolvedValue(entityWithoutUser);
       shortUrlResponseMapper.toDto.mockReturnValue(responseWithoutUser);
 
-      await controller.create(dto, mockResponse as Response, undefined);
+      await controller.create(
+        dto,
+        mockRequest as never,
+        mockResponse as Response,
+        undefined,
+      );
 
       expect(createShortUrlUseCase.execute).toHaveBeenCalledWith({
         originalUrl: dto.originalUrl,
@@ -120,7 +128,7 @@ describe('ShortUrlController', () => {
       });
     });
 
-    it('deve criar URL encurtada com usuário autenticado', async () => {
+    it('should create short URL with authenticated user', async () => {
       const dto: CreateShortUrlDto = {
         originalUrl: 'https://example.com/very-long-url',
       };
@@ -128,7 +136,12 @@ describe('ShortUrlController', () => {
       createShortUrlUseCase.execute.mockResolvedValue(mockShortUrlEntity);
       shortUrlResponseMapper.toDto.mockReturnValue(mockShortUrlResponse);
 
-      await controller.create(dto, mockResponse as Response, 1);
+      await controller.create(
+        dto,
+        mockRequest as never,
+        mockResponse as Response,
+        1,
+      );
 
       expect(createShortUrlUseCase.execute).toHaveBeenCalledWith({
         originalUrl: dto.originalUrl,
@@ -146,16 +159,21 @@ describe('ShortUrlController', () => {
       });
     });
 
-    it('deve propagar erro quando o use case falhar', async () => {
+    it('should propagate error when use case fails', async () => {
       const dto: CreateShortUrlDto = {
         originalUrl: 'https://example.com/test',
       };
 
-      const error = new Error('Não foi possível gerar código único');
+      const error = new Error('Failed to generate unique code');
       createShortUrlUseCase.execute.mockRejectedValue(error);
 
       await expect(
-        controller.create(dto, mockResponse as Response, 1),
+        controller.create(
+          dto,
+          mockRequest as never,
+          mockResponse as Response,
+          1,
+        ),
       ).rejects.toThrow(error);
 
       expect(shortUrlResponseMapper.toDto).not.toHaveBeenCalled();
@@ -164,7 +182,7 @@ describe('ShortUrlController', () => {
   });
 
   describe('list', () => {
-    it('deve listar URLs do usuário autenticado', async () => {
+    it('should list URLs for authenticated user', async () => {
       const mockList: ShortUrlEntity[] = [
         mockShortUrlEntity,
         createMockShortUrl({
@@ -189,7 +207,7 @@ describe('ShortUrlController', () => {
         .mockReturnValueOnce(mockResponseList[0])
         .mockReturnValueOnce(mockResponseList[1]);
 
-      await controller.list(mockResponse as Response, 1);
+      await controller.list(mockRequest as never, mockResponse as Response, 1);
 
       expect(listShortUrlsUseCase.execute).toHaveBeenCalledWith(1);
       expect(shortUrlResponseMapper.toDto).toHaveBeenCalledTimes(2);
@@ -200,10 +218,10 @@ describe('ShortUrlController', () => {
       });
     });
 
-    it('deve retornar lista vazia quando usuário não tiver URLs', async () => {
+    it('should return empty list when user has no URLs', async () => {
       listShortUrlsUseCase.execute.mockResolvedValue([]);
 
-      await controller.list(mockResponse as Response, 1);
+      await controller.list(mockRequest as never, mockResponse as Response, 1);
 
       expect(listShortUrlsUseCase.execute).toHaveBeenCalledWith(1);
       expect(shortUrlResponseMapper.toDto).not.toHaveBeenCalled();
@@ -215,7 +233,7 @@ describe('ShortUrlController', () => {
   });
 
   describe('update', () => {
-    it('deve atualizar URL de destino com sucesso', async () => {
+    it('should update destination URL successfully', async () => {
       const dto: UpdateShortUrlDto = {
         originalUrl: 'https://example.com/new-url',
       };
@@ -233,7 +251,13 @@ describe('ShortUrlController', () => {
       updateShortUrlUseCase.execute.mockResolvedValue(updatedEntity);
       shortUrlResponseMapper.toDto.mockReturnValue(updatedResponse);
 
-      await controller.update(1, dto, mockResponse as Response, 1);
+      await controller.update(
+        1,
+        dto,
+        mockRequest as never,
+        mockResponse as Response,
+        1,
+      );
 
       expect(updateShortUrlUseCase.execute).toHaveBeenCalledWith(1, dto, 1);
 
@@ -249,16 +273,22 @@ describe('ShortUrlController', () => {
       });
     });
 
-    it('deve propagar erro quando URL não pertencer ao usuário', async () => {
+    it('should propagate error when URL does not belong to user', async () => {
       const dto: UpdateShortUrlDto = {
         originalUrl: 'https://example.com/new-url',
       };
 
-      const error = new Error('URL não encontrada ou sem permissão');
+      const error = new Error('URL not found or no permission');
       updateShortUrlUseCase.execute.mockRejectedValue(error);
 
       await expect(
-        controller.update(1, dto, mockResponse as Response, 1),
+        controller.update(
+          1,
+          dto,
+          mockRequest as never,
+          mockResponse as Response,
+          1,
+        ),
       ).rejects.toThrow(error);
 
       expect(shortUrlResponseMapper.toDto).not.toHaveBeenCalled();
@@ -267,7 +297,7 @@ describe('ShortUrlController', () => {
   });
 
   describe('delete', () => {
-    it('deve excluir URL encurtada com sucesso', async () => {
+    it('should delete short URL successfully', async () => {
       deleteShortUrlUseCase.execute.mockResolvedValue(undefined);
 
       await controller.delete(1, mockResponse as Response, 1);
@@ -281,8 +311,8 @@ describe('ShortUrlController', () => {
       });
     });
 
-    it('deve propagar erro quando URL não pertencer ao usuário', async () => {
-      const error = new Error('URL não encontrada ou sem permissão');
+    it('should propagate error when URL does not belong to user', async () => {
+      const error = new Error('URL not found or no permission');
       deleteShortUrlUseCase.execute.mockRejectedValue(error);
 
       await expect(
@@ -293,7 +323,7 @@ describe('ShortUrlController', () => {
       expect(mockResponse.json).not.toHaveBeenCalled();
     });
 
-    it('deve chamar use case com IDs corretos', async () => {
+    it('should call use case with correct IDs', async () => {
       deleteShortUrlUseCase.execute.mockResolvedValue(undefined);
 
       await controller.delete(42, mockResponse as Response, 10);
