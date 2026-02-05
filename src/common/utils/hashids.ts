@@ -2,7 +2,7 @@ import Hashids from 'hashids';
 
 const ALPHABET =
   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const SALT = process.env.HASHIDS_SALT ?? 'short-url-api';
+const SALT = process.env.HASHIDS_SALT;
 const MAX_LENGTH = 6;
 
 const hashids = new Hashids(SALT, 0, ALPHABET);
