@@ -3,10 +3,12 @@ services:
     image: postgres:16-alpine
     container_name: short-url-db
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: shorturl
-      POSTGRES_PASSWORD: shorturl
-      POSTGRES_DB: short_url_db
+      POSTGRES_USER: ${POSTGRES_USER:-shorturl}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shorturl}
+      POSTGRES_DB: ${POSTGRES_DB:-short_url_db}
     ports:
       - "5432:5432"
     volumes:
