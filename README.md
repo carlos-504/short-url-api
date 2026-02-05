@@ -2,6 +2,11 @@
 
 API REST em Node.js (NestJS) para encurtamento de URLs, cadastro e autenticação de usuários. Projeto preparado para infraestrutura que escala verticalmente e organizado em camadas no padrão DDD.
 
+**Ambiente em produção:** a API está deployada em uma **instância EC2 da AWS**.
+
+- **API:** http://100.52.215.33:3000
+- **Swagger:** http://100.52.215.33:3000/api/docs
+
 ## Requisitos
 
 - **Node.js** (versão LTS estável, ex.: 18.x ou 20.x)
