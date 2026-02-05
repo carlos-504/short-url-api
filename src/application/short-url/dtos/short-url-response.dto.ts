@@ -23,7 +23,9 @@ export class ShortUrlResponseDto {
   clicks: string;
 
   @ApiProperty({
+    type: Number,
     nullable: true,
+    example: null,
     description: 'ID do usuário dono (null se anônimo)',
   })
   userId: number | null;
