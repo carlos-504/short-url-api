@@ -8,7 +8,7 @@ export class ShortUrlResponseDto {
   originalUrl: string;
 
   @ApiProperty({
-    example: 'aZbKq7',
+    example: 'cPXz72',
     description: 'Código encurtado (até 6 caracteres)',
   })
   shortCode: string;
