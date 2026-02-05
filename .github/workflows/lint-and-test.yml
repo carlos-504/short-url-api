@@ -27,7 +27,7 @@ jobs:
           DATABASE_URL: postgresql://user:pass@localhost:5432/db
 
       - name: Lint
-        run: npm run lint
+        run: npm run lint:ci
 
       - name: Test
         run: npm run test
