@@ -21,10 +21,20 @@ docker compose up -d
 - **Banco:** PostgreSQL 16 na porta `5432` (usuário/senha/DB: `shorturl`/`shorturl`/`short_url_db`).
 - **API:** `http://localhost:3000` (Swagger em `http://localhost:3000/api/docs`).
 - **Volumes:** `./src` e `./prisma` montados no container (mudanças refletem automaticamente).
+- **Variáveis de ambiente:** o arquivo `.env` do host é carregado no container (`env_file: .env`). Assim, `OBSERVABILITY_ENABLED`, `OTEL_*`, etc. entram no container. Se o collector OTLP estiver **no host** (fora do Docker), use no `.env` o endpoint `http://host.docker.internal:4318` (Mac/Windows) ou o IP do host no Linux, pois dentro do container `localhost` é o próprio container.
 
 As migrações rodam automaticamente na subida do container da aplicação. Para ver os logs: `docker compose logs -f app`.
 
 Para parar: `docker compose down`. Para remover também o volume do banco: `docker compose down -v`.
+
+**Se aparecer erro "Cannot find module" (ex.: OpenTelemetry):** as dependências foram adicionadas depois da última build. Reconstrua a imagem sem cache:
+
+```bash
+docker compose build --no-cache app
+docker compose up -d
+```
+
+**Observabilidade (Sentry):** com `OBSERVABILITY_ENABLED=true` e `SENTRY_DSN` no `.env`, erros e performance são enviados ao Sentry (SaaS). Sem containers extras de observabilidade. Ver `docs/OBSERVABILITY.md`.
 
 **Para produção:** use `Dockerfile.prod` (build otimizado, sem volumes, sem dev dependencies).
 
@@ -54,8 +64,9 @@ Edite o `.env` e defina pelo menos:
 Opcionais (com padrões):
 
 - `PORT` – porta do servidor (padrão: 3000)
-- `APP_URL` – URL base da API para montar a URL encurtada retornada (padrão: http://localhost:3000)
 - `BCRYPT_SALT_ROUNDS` – rodadas do bcrypt para hash de senha (padrão: 10)
+
+A URL base das URLs encurtadas é obtida dinamicamente da requisição HTTP (Host + protocolo).
 
 ### 3. Banco de dados
 
@@ -94,8 +105,9 @@ Lá é possível visualizar todos os endpoints, schemas de request/response e te
 | `DATABASE_URL`      | Sim         | URL de conexão PostgreSQL                                                 | -                   |
 | `JWT_SECRET`        | Sim (prod)  | Segredo para assinatura dos tokens JWT                                    | -                   |
 | `PORT`              | Não         | Porta do servidor HTTP                                                    | 3000                |
-| `APP_URL`           | Não         | URL base da API (para montar a URL encurtada completa na resposta)       | http://localhost:3000 |
 | `BCRYPT_SALT_ROUNDS`| Não         | Rodadas de salt do bcrypt para hash de senha                              | 10                  |
+
+A URL base das URLs encurtadas é obtida da requisição HTTP (Host + protocolo, incluindo headers X-Forwarded-Proto/Host para proxies).
 
 Valores que **não** são variáveis de ambiente (fixos no código): tamanho do código encurtado (6 caracteres), prefixo da rota de redirecionamento (`/r`), tempo de expiração do JWT (7 dias).
 
@@ -187,6 +199,15 @@ npm run test:verbose # testes com logs detalhados
 npm run test:e2e     # testes e2e
 npm run test:cov     # testes com cobertura
 ```
+
+## Observabilidade
+
+O projeto possui uma camada de observabilidade centralizada em `src/shared/observability/` com providers **noop**, **console** e **sentry**. Configuração e uso estão em **[docs/OBSERVABILITY.md](docs/OBSERVABILITY.md)**.
+
+- **Ativar:** `OBSERVABILITY_ENABLED=true` e `OBSERVABILITY_PROVIDER=sentry` (ou `console`).
+- **Desativar:** omitir ou definir `OBSERVABILITY_ENABLED=false` (usa provider noop).
+- **Endpoints:** `/metrics` (Prometheus).
+- **Sentry:** configure `SENTRY_DSN` para erros e performance (SaaS)
 
 ## Testes
 

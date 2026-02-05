@@ -1,0 +1,1 @@
+export { initSentryIfEnabled } from './bootstrap';

@@ -29,11 +29,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://shorturl:shorturl@db:5432/short_url_db
       JWT_SECRET: change-me-in-production
       PORT: 3000
-      APP_URL: http://localhost:3000
+      OBSERVABILITY_ENABLED: "true"
+      OBSERVABILITY_PROVIDER: "sentry"
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      NODE_ENV: ${NODE_ENV:-development}
     ports:
       - "3000:3000"
 

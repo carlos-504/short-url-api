@@ -1,3 +1,5 @@
+import 'dotenv/config';
+import { initSentryIfEnabled } from './shared/observability/providers/sentry';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -6,6 +8,8 @@ import { prisma } from './library/prisma';
 import { useContainer } from 'class-validator';
 
 async function bootstrap() {
+  initSentryIfEnabled();
+
   const app = await NestFactory.create(AppModule);
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
