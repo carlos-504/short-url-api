@@ -152,6 +152,45 @@ Ver `test/README.md` para detalhes.
 
 Deploy em EC2 via **Terraform** (pasta `terraform/`). Ver `terraform/README.md`.
 
+## Escalabilidade horizontal – pontos de melhoria
+
+O sistema atual escala verticalmente (uma instância EC2). Para escalar horizontalmente e manter o sistema sempre disponível, considere:
+
+### 1. Load Balancer
+
+- **ALB (Application Load Balancer) da AWS** na frente das instâncias da API.
+- Distribui tráfego entre múltiplas instâncias e detecta instâncias com falha.
+- Health checks em `/health` ou `/metrics` para retirar instâncias do pool quando indisponíveis.
+- **Resultado:** alta disponibilidade e tolerância a falhas.
+
+### 2. Banco de dados
+
+- **PostgreSQL:** limitar conexões por instância (pool) e planejar o total de conexões.
+- **RDS/Aurora:** gerenciar failover e read replicas para leitura.
+- Considerar **connection pooling** (ex.: PgBouncer) se houver muitas instâncias.
+
+### 3. Cache e redirecionamentos
+
+- O endpoint `GET /r/:code` é o mais acessado.
+- **Redis** (ou ElastiCache) para cachear redirecionamentos por `shortCode`.
+- Reduz carga no PostgreSQL e melhora latência.
+- **Desafio:** invalidação ao atualizar ou excluir uma URL.
+
+### 4. Métricas e monitoramento
+
+- Endpoint `/metrics` (Prometheus) já existente.
+- Coletar métricas de todas as instâncias em um único Prometheus/Grafana.
+- Usar **Sentry** para erros distribuídos.
+
+### Resumo dos maiores desafios
+
+| Desafio | Solução |
+|---------|---------|
+| Ponto único de falha | Load Balancer + múltiplas instâncias |
+| Conexões com o banco | Pool por instância + PgBouncer se necessário |
+| Latência no redirect | Cache Redis para `GET /r/:code` |
+| Métricas distribuídas | Prometheus/Grafana + Sentry |
+
 ## Licença
 
 UNLICENSED (projeto privado).
