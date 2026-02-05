@@ -124,11 +124,13 @@ git commit -m "docs: atualiza README com instruções Docker"
 
 ### Estrutura de Pastas
 
+Veja **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** para detalhes.
+
 ```
 src/
-├── application/      # Use cases, DTOs, mappers
-├── domain/          # Entidades, interfaces de repositórios
-├── infrastructure/  # Implementações de repositórios
+├── domain/          # Entidades, interfaces, tokens DI
+├── application/     # Use cases, DTOs, mappers
+├── infrastructure/  # Implementações Prisma
 ├── presentation/    # Controllers, guards, decorators
 └── modules/         # Módulos NestJS
 

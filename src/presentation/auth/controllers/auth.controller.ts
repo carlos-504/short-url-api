@@ -9,8 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
-import { LoginUseCase } from '../../../application/auth/use-cases/login.use-case';
-import { LoginDto } from '../../../application/auth/dtos/login.dto';
+import { LoginUseCase, LoginDto } from '../../../application/auth';
 import { sendResponse } from '../../../common/http';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Public } from '../decorators/public.decorator';

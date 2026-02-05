@@ -151,11 +151,13 @@ Requisições autenticadas: header `Authorization: Bearer <accessToken>`.
 
 ## Estrutura do projeto (DDD)
 
-- `application/` – use cases, DTOs e orquestração.
-- `domain/` – entidades e interfaces de repositório.
-- `infrastructure/` – implementações (ex.: Prisma).
-- `presentation/` – controllers, guards, estratégias JWT.
-- Módulos Nest em `user/`, `auth/`, `short-url/` na raiz de `src/`.
+Detalhes em **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
+- **domain/** – entidades puras (BaseEntity), interfaces de repositório e tokens DI.
+- **application/** – use cases, DTOs e mappers (um index por agregado).
+- **infrastructure/** – implementações Prisma + utilitário `mapPrismaToDomain`.
+- **presentation/** – controllers, guards e JWT.
+- **modules/** – módulos Nest.
 
 ## Docker
 

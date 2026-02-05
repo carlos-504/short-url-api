@@ -1,7 +1,6 @@
 import type { ShortUrlEntity } from '../entities/short-url.entity';
-import { SHORT_URL_REPOSITORY } from '../../../common/tokens';
 
-export { SHORT_URL_REPOSITORY };
+export const SHORT_URL_REPOSITORY = Symbol('SHORT_URL_REPOSITORY');
 
 export interface IShortUrlRepository {
   create(

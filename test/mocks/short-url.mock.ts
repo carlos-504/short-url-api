@@ -1,4 +1,4 @@
-import type { ShortUrlEntity } from '../../src/common/entities';
+import type { ShortUrlEntity } from '../../src/domain/short-url';
 
 export const mockShortUrlEntity: ShortUrlEntity = {
   id: 1,

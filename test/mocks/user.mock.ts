@@ -1,4 +1,4 @@
-import type { UserEntity } from '../../src/common/entities';
+import type { UserEntity } from '../../src/domain/user';
 
 export const mockUserEntity: UserEntity = {
   id: 1,

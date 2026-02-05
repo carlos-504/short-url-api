@@ -1,7 +1,3 @@
-/**
- * Abstração de Logger para observabilidade.
- * A aplicação depende apenas desta interface; implementações ficam nos providers.
- */
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LogMeta {

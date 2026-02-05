@@ -5,6 +5,7 @@ import type {
   IShortUrlRepository,
 } from '../../../domain/short-url';
 import { encodeId } from '../../../common/utils/hashids';
+import { mapPrismaToDomain } from '../../shared/prisma-to-domain';
 
 @Injectable()
 export class PrismaShortUrlRepository implements IShortUrlRepository {
@@ -17,7 +18,7 @@ export class PrismaShortUrlRepository implements IShortUrlRepository {
     `;
     const id = Number(nextval);
     const shortCode = encodeId(id);
-    return prisma.shortUrl.create({
+    const created = await prisma.shortUrl.create({
       data: {
         id,
         originalUrl,
@@ -25,6 +26,7 @@ export class PrismaShortUrlRepository implements IShortUrlRepository {
         userId: userId ?? null,
       },
     });
+    return mapPrismaToDomain<ShortUrlEntity>(created);
   }
 
   async create(
@@ -32,54 +34,60 @@ export class PrismaShortUrlRepository implements IShortUrlRepository {
     shortCode: string,
     userId?: number,
   ): Promise<ShortUrlEntity> {
-    return prisma.shortUrl.create({
+    const created = await prisma.shortUrl.create({
       data: {
         originalUrl,
         shortCode,
         userId: userId ?? null,
       },
     });
+    return mapPrismaToDomain<ShortUrlEntity>(created);
   }
 
   async findById(id: number): Promise<ShortUrlEntity | null> {
-    return prisma.shortUrl.findFirst({
+    const row = await prisma.shortUrl.findFirst({
       where: { id, deletedAt: null },
     });
+    return row ? mapPrismaToDomain<ShortUrlEntity>(row) : null;
   }
 
   async findByIdAndUserId(
     id: number,
     userId: number,
   ): Promise<ShortUrlEntity | null> {
-    return prisma.shortUrl.findFirst({
+    const row = await prisma.shortUrl.findFirst({
       where: { id, userId, deletedAt: null },
     });
+    return row ? mapPrismaToDomain<ShortUrlEntity>(row) : null;
   }
 
   async findByShortCode(shortCode: string): Promise<ShortUrlEntity | null> {
-    return prisma.shortUrl.findFirst({
+    const row = await prisma.shortUrl.findFirst({
       where: { shortCode, deletedAt: null },
     });
+    return row ? mapPrismaToDomain<ShortUrlEntity>(row) : null;
   }
 
   async findAll(userId?: number): Promise<ShortUrlEntity[]> {
-    return prisma.shortUrl.findMany({
+    const rows = await prisma.shortUrl.findMany({
       where: {
         deletedAt: null,
         ...(userId !== undefined && { userId }),
       },
       orderBy: { createdAt: 'desc' },
     });
+    return rows.map((r) => mapPrismaToDomain<ShortUrlEntity>(r));
   }
 
   async updateDestination(
     id: number,
     originalUrl: string,
   ): Promise<ShortUrlEntity> {
-    return prisma.shortUrl.update({
+    const updated = await prisma.shortUrl.update({
       where: { id, deletedAt: null },
       data: { originalUrl },
     });
+    return mapPrismaToDomain<ShortUrlEntity>(updated);
   }
 
   async softDelete(id: number): Promise<void> {

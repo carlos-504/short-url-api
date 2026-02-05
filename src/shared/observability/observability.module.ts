@@ -57,9 +57,6 @@ function getProviderClasses(): {
   }
 }
 
-/**
- * Controller que expõe o endpoint /metrics em formato Prometheus.
- */
 @Controller()
 class MetricsController {
   constructor(
